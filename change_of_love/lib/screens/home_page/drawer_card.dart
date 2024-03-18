@@ -26,20 +26,69 @@ class _DrawerCardState extends State<DrawerCard> {
           padding: EdgeInsets.zero,
           children: [
             const SizedBox(
-              height: 80,
+              height: 170,
               child: DrawerHeader(
                 decoration: BoxDecoration(
                   color: Color.fromARGB(255, 103, 103, 104),
                 ),
                 child: Center(
-                  child: Text(
-                    'Change Of Love',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
+                    child: Column(
+                  children: [
+                    /*Container(
+                      height: 80, // CircleAvatar'ın boyutu
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                      ),
+                      child: Image(
+                        image: AssetImage('assets/images/logo.png'),
+                        width: 100, // Genişlik
+                        height: 44, // Yükseklik
+                      ),
+                    ),*/
+                    CircleAvatar(
+                      backgroundColor: Color.fromARGB(255, 251, 255, 251),
+                      radius: 50,
+                      child: Image(
+                        image: AssetImage('assets/images/logo.png'),
+                        width: 100, // Genişlik
+                        height: 44, // Yükseklik
+                      ),
                     ),
-                  ),
-                ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      "Change of Love",
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 251, 255, 251),
+                          fontSize: 20),
+                    )
+                  ],
+                )
+                    /* Row(
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(
+                            image: AssetImage('assets/images/logo.png'),
+                            width: 100, // Genişlik
+                            height: 44, // Yükseklik
+                          ),
+                        ],
+                      ),
+                      Text(
+                        'Change Of Love',
+                        maxLines: 2,
+                        overflow: TextOverflow.visible,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),*/
+                    ),
               ),
             ),
             DrawerListTile(

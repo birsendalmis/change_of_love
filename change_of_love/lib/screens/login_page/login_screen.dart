@@ -1,7 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:change_of_love/constants/colors.dart';
 import 'package:change_of_love/screens/home_page/home_page.dart';
-import 'package:change_of_love/screens/signup_screen.dart';
+import 'package:change_of_love/screens/login_page/signup_screen.dart';
 import 'package:change_of_love/widgets/custom_elevated_button.dart';
 import 'package:change_of_love/widgets/custom_text_button.dart';
 import 'package:change_of_love/widgets/custom_text_field.dart';

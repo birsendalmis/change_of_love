@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
-class DeveloperAbout extends StatelessWidget {
-  const DeveloperAbout({super.key});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
         child: Text(
-          "Developer About",
+          "Profile Page",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),

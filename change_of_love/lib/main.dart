@@ -1,4 +1,4 @@
-import 'package:change_of_love/screens/splash_screen.dart';
+import 'package:change_of_love/screens/login_page/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

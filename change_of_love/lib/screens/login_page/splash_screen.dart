@@ -1,6 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:change_of_love/constants/colors.dart';
-import 'package:change_of_love/screens/welcome_screen.dart';
+import 'package:change_of_love/screens/login_page/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
