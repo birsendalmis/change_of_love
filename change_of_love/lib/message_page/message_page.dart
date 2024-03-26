@@ -13,7 +13,10 @@ class _MessagePageState extends State<MessagePage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
-        child: Column(
+          child: Center(
+        child: Text("Message Page"),
+      )
+          /* Column(
           children: [
             Container(
               padding: const EdgeInsets.only(top: 5.0),
@@ -226,13 +229,13 @@ class _MessagePageState extends State<MessagePage> {
               ),
             ),
           ],
-        ),
-      ),
+        ),*/
+          ),
     );
   }
 }
 
-Future<void> showBottomSheetOptions(BuildContext context) {
+/*Future<void> showBottomSheetOptions(BuildContext context) {
   return showModalBottomSheet(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.only(
@@ -325,3 +328,4 @@ Future<void> showBottomSheetOptions(BuildContext context) {
     },
   );
 }
+*/

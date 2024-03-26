@@ -1,7 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:change_of_love/constants/colors.dart';
-import 'package:change_of_love/screens/login_page/login_screen.dart';
-import 'package:change_of_love/screens/login_page/signup_screen.dart';
+import 'package:change_of_love/screens/auth/login_screen.dart';
+import 'package:change_of_love/screens/auth/signup_screen.dart';
 import 'package:change_of_love/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "950423524502",
+    "project_id": "change-of-love",
+    "storage_bucket": "change-of-love.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950423524502:android:8bfb3fada29f6c28335eb7",
+        "android_client_info": {
+          "package_name": "com.example.change_of_love"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgW1lGYc9pLPnUh-PZJL6bzBkdcAc3NOs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
