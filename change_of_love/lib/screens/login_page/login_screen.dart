@@ -49,21 +49,20 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Column(
                     children: <Widget>[
                       FadeInUp(
                         duration: const Duration(milliseconds: 1000),
                         child: Container(
-                          height: 150,
-                          width: 150,
-                          color: Colors.white,
-                          child: const Center(
-                            child: Text(
-                              "GÖRSEL",
-                              style: TextStyle(
-                                  fontSize: 30, fontWeight: FontWeight.bold),
+                          height: 350,
+                          width: double.infinity,
+                          //height: MediaQuery.of(context).size.height / 3.5,
+                          decoration: const BoxDecoration(
+                            // color: Colors.white,
+                            image: DecorationImage(
+                              image: AssetImage("assets/images/login.png"),
                             ),
                           ),
                         ),
@@ -103,9 +102,6 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 15,
-                  ),
                   FadeInUp(
                       duration: const Duration(milliseconds: 1400),
                       child: Padding(
@@ -137,14 +133,17 @@ class _LoginPageState extends State<LoginPage> {
                               );
                             },
                             btntext: "Hesap Oluştur!",
-                            btnTxtColor: AppColors.btnColorGreen)
+                            btnTxtColor: AppColors.btnColorGreen),
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 20,
                   )
                 ],
               ),
             ),
-            FadeInUp(
+            /*FadeInUp(
                 duration: const Duration(milliseconds: 1200),
                 child: Container(
                   height: MediaQuery.of(context).size.height / 3,
@@ -152,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                       image: DecorationImage(
                           image: AssetImage('assets/background.png'),
                           fit: BoxFit.cover)),
-                ))
+                ))*/
           ],
         ),
       ),

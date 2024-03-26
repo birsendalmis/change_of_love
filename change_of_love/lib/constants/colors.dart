@@ -7,5 +7,5 @@ class AppColors {
   static const Color backgroundColor = Color.fromARGB(255, 244, 251, 242);
   static const Color btnColorGreen = Colors.green;
   static const Color darkGreyColor = Color(0xFFA8A8A8);
-
+  static const Color listButtonColor = Color.fromARGB(255, 253, 242, 227);
 }

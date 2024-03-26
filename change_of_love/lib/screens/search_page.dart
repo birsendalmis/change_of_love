@@ -10,10 +10,12 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        "Search Page",
-        style: TextStyle(fontWeight: FontWeight.bold),
+    return const Scaffold(
+      body: Center(
+        child: Text(
+          "Search Page",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

@@ -32,7 +32,7 @@ class CustomElevatedButton extends StatelessWidget {
             backgroundColor: btnColor,
             elevation: 1.0,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(15),
             )),
         child: Center(
             child: Text(

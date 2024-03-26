@@ -1,14 +1,11 @@
+import 'package:change_of_love/add/change_list_add.dart';
+import 'package:change_of_love/add/library_add.dart';
+import 'package:change_of_love/add/read_list_add.dart';
 import 'package:change_of_love/constants/colors.dart';
-import 'package:change_of_love/screens/add_page.dart';
-import 'package:change_of_love/screens/home_page/drawer_card.dart';
+import 'package:change_of_love/message_page/message_page.dart';
 import 'package:change_of_love/screens/home_page/home_body_page.dart';
-import 'package:change_of_love/screens/home_page/notifications_page.dart';
-import 'package:change_of_love/screens/home_page/profile_card.dart';
-import 'package:change_of_love/screens/message_page.dart';
 import 'package:change_of_love/screens/profile_page/profile_page.dart';
 import 'package:change_of_love/screens/search_page.dart';
-import 'package:change_of_love/widgets/custom_icon_button.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,100 +16,164 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final navigationKey = GlobalKey<CurvedNavigationBarState>();
-  int index = 0;
-  final screens = [
-    const HomeBodyPage(),
-    const SearchPage(),
-    const AddPage(),
-    const MessagePage(),
-    const ProfilePage()
+  int myCurrentIndex = 0;
+  List pages = [
+    HomeBodyPage(),
+    SearchPage(),
+    SizedBox(),
+    MessagePage(),
+    ProfilePage()
   ];
   @override
   Widget build(BuildContext context) {
-    final items = [
-      const Icon(
-        Icons.home,
-        size: 30,
-      ),
-      const Icon(
-        Icons.search,
-        size: 30,
-      ),
-      const Icon(
-        Icons.add,
-        size: 30,
-      ),
-      const Icon(
-        Icons.message,
-        size: 30,
-      ),
-      const Icon(
-        Icons.person,
-        size: 30,
-      ),
-    ];
     return SafeArea(
       child: Scaffold(
         // extendBody: true,
         backgroundColor: AppColors.backgroundColor,
-        bottomNavigationBar: Theme(
-            data: Theme.of(context)
-                .copyWith(iconTheme: const IconThemeData(color: Colors.white)),
-            child: CurvedNavigationBar(
-                key: navigationKey,
-                color: const Color.fromARGB(255, 15, 84, 17),
-                buttonBackgroundColor: Colors.amber,
-                backgroundColor: Colors.transparent,
-                onTap: (index) {
-                  setState(() {
-                    this.index = index;
-                  });
-                },
-                //animationCurve: Curves.easeInOut,
-                animationDuration: const Duration(milliseconds: 300),
-                index: index,
-                items: items)),
-        appBar: AppBar(
-          toolbarHeight: 80,
-          title: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Colors.amber,
+          iconSize: 35,
+          unselectedItemColor: Colors.white,
+          backgroundColor: const Color.fromARGB(255, 191, 222, 192),
+          type: BottomNavigationBarType.fixed,
+          currentIndex: myCurrentIndex,
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.home,
+                  size: 30,
+                ),
+                label: ""),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.search,
+                  size: 30,
+                ),
+                label: ""),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.message,
+                  size: 30,
+                ),
+                label: ""),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.person,
+                  size: 30,
+                ),
+                label: ""),
+          ],
+          onTap: (myNewCurrent) {
+            setState(() {
+              if (myNewCurrent == 2) {
+                _showBottomSheet();
+              } else {
+                myCurrentIndex = myNewCurrent;
+              }
+            });
+          },
+        ),
+
+        body: pages[myCurrentIndex],
+      ),
+    );
+  }
+
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 270,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(40),
+              topRight: Radius.circular(40),
+            ),
+          ),
+          child: Column(
             children: [
-              Text("C "),
-              Icon(
-                Icons.favorite,
-                color: Color.fromARGB(255, 145, 14, 5),
+              SizedBox(
+                height: 10,
               ),
-              Text(" F")
+              Text(
+                "EKLE / DÜZENLE",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+              ),
+              Divider(
+                endIndent: 90,
+                indent: 90,
+                color: Colors.grey,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              EkleRow(
+                text: "Kütüphanye",
+                onTapp: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LibraryAdd()),
+                  );
+                },
+              ),
+              EkleRow(
+                text: "Takas Listesine",
+                onTapp: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ChangeListAdd()),
+                  );
+                },
+              ),
+              EkleRow(
+                text: "Okuma Listesine",
+                onTapp: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ReadListAdd()),
+                  );
+                },
+              )
             ],
           ),
-          actions: [
-            CustomIconButton(
-              iconsData: Icons.notifications,
-              iconColor: Colors.black,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NotificationsPage(),
-                  ),
-                );
-              },
+        );
+      },
+    );
+  }
+}
+
+class EkleRow extends StatelessWidget {
+  final VoidCallback onTapp;
+  final String text;
+  const EkleRow({
+    super.key,
+    required this.text,
+    required this.onTapp,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTapp,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 20, left: 25),
+        child: Row(
+          children: [
+            Icon(Icons.arrow_forward_ios),
+            SizedBox(
+              width: 5,
             ),
-            CustomIconButton(
-              iconsData: Icons.person,
-              iconColor: Colors.black,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfileCard()),
-                );
-              },
-            )
+            Text(
+              "$text Ekle / Düzenle",
+              style: TextStyle(fontSize: 16),
+            ),
           ],
         ),
-        drawer: const DrawerCard(),
-        body: screens[index],
       ),
     );
   }

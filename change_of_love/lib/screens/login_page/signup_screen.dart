@@ -51,19 +51,19 @@ class _SignupScreenState extends State<SignupScreen> {
               Column(
                 children: <Widget>[
                   FadeInUp(
-                      duration: const Duration(milliseconds: 1000),
-                      child: Container(
-                        height: 150,
-                        width: 150,
-                        color: Colors.white,
-                        child: const Center(
-                          child: Text(
-                            "GÖRSEL",
-                            style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
-                          ),
+                    duration: const Duration(milliseconds: 1000),
+                    child: Container(
+                      height: 350,
+                      width: double.infinity,
+                      //height: MediaQuery.of(context).size.height / 3.5,
+                      decoration: const BoxDecoration(
+                        // color: Colors.white,
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/signup.png"),
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
                   const SizedBox(
                     height: 20,
                   ),

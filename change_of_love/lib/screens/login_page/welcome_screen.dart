@@ -39,7 +39,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 5,
                     ),
                     FadeInUp(
                       duration: const Duration(milliseconds: 1200),
@@ -55,21 +55,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 FadeInUp(
                   duration: const Duration(milliseconds: 1400),
                   child: Container(
-                    height: 150,
-                    width: 150,
-                    // height: MediaQuery.of(context).size.height / 3.5,
-                    decoration: const BoxDecoration(color: Colors.white
-                        /*image: DecorationImage(
-                            image: AssetImage("assets/images/welcome.png"),
-                            ),*/
-                        ),
-                    child: const Center(
-                      child: Text(
-                        "GÖRSEL",
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30),
+                    height: 350,
+                    width: double.infinity,
+                    //height: MediaQuery.of(context).size.height / 3.5,
+                    decoration: const BoxDecoration(
+                      //color: Colors.white,
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/welcome.png"),
                       ),
                     ),
                   ),
@@ -89,7 +81,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           btnText: "Giriş Yap"),
                     ),
                     const SizedBox(
-                      height: 15,
+                      height: 10,
                     ),
                     FadeInUp(
                       duration: const Duration(milliseconds: 1600),
