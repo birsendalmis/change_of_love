@@ -10,8 +10,9 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
+    return const Scaffold(
       body: SafeArea(
           child: Center(
         child: Text("Message Page"),

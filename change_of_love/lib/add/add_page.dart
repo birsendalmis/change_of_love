@@ -12,7 +12,7 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     return Center(
       child: ElevatedButton(
-          child: SizedBox(),
+          child: const SizedBox(),
           onPressed: () {
             showModalBottomSheet(
               context: context,

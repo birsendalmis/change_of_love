@@ -18,11 +18,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int myCurrentIndex = 0;
   List pages = [
-    HomeBodyPage(),
-    SearchPage(),
-    SizedBox(),
-    MessagePage(),
-    ProfilePage()
+    const HomeBodyPage(),
+    const SearchPage(),
+    const SizedBox(),
+    const MessagePage(),
+    const ProfilePage()
   ];
   @override
   Widget build(BuildContext context) {
@@ -97,19 +97,19 @@ class _HomePageState extends State<HomePage> {
           ),
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              Text(
+              const Text(
                 "EKLE / DÜZENLE",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
               ),
-              Divider(
+              const Divider(
                 endIndent: 90,
                 indent: 90,
                 color: Colors.grey,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               EkleRow(
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                 onTapp: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LibraryAdd()),
+                    MaterialPageRoute(builder: (context) => const LibraryAdd()),
                   );
                 },
               ),
@@ -126,7 +126,8 @@ class _HomePageState extends State<HomePage> {
                 onTapp: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ChangeListAdd()),
+                    MaterialPageRoute(
+                        builder: (context) => const ChangeListAdd()),
                   );
                 },
               ),
@@ -135,7 +136,8 @@ class _HomePageState extends State<HomePage> {
                 onTapp: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ReadListAdd()),
+                    MaterialPageRoute(
+                        builder: (context) => const ReadListAdd()),
                   );
                 },
               )
@@ -164,13 +166,13 @@ class EkleRow extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 20, left: 25),
         child: Row(
           children: [
-            Icon(Icons.arrow_forward_ios),
-            SizedBox(
+            const Icon(Icons.arrow_forward_ios),
+            const SizedBox(
               width: 5,
             ),
             Text(
               "$text Ekle / Düzenle",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),

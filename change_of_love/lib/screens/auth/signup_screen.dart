@@ -1,6 +1,12 @@
+import 'dart:io';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:change_of_love/constants/colors.dart';
+import 'package:change_of_love/data/firebase_services/firebase_auth.dart';
 import 'package:change_of_love/screens/auth/login_screen.dart';
+import 'package:change_of_love/util/dialog.dart';
+import 'package:change_of_love/util/exeption.dart';
+import 'package:change_of_love/util/image_picker.dart';
 import 'package:change_of_love/widgets/custom_elevated_button.dart';
 import 'package:change_of_love/widgets/custom_text_button.dart';
 import 'package:change_of_love/widgets/custom_text_field.dart';
@@ -15,7 +21,18 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  late String email, password, passwordAgain;
+  late String email, password, passwordAgain, username, bio;
+  final emailController = TextEditingController();
+  FocusNode email_F = FocusNode();
+  final passwordcontroller = TextEditingController();
+  FocusNode password_F = FocusNode();
+  final userNameController = TextEditingController();
+  FocusNode userName_F = FocusNode();
+  final bioController = TextEditingController();
+  FocusNode bio_F = FocusNode();
+  File? _imageFile;
+  final passwordAgainController = TextEditingController();
+  FocusNode passwordAgain_F = FocusNode();
   final formKey = GlobalKey<FormState>();
   final firebaseAuth = FirebaseAuth.instance;
   @override
@@ -56,10 +73,13 @@ class _SignupScreenState extends State<SignupScreen> {
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    FadeInUp(
+                    const SizedBox(
+                      height: 80,
+                    ),
+                    /*FadeInUp(
                       duration: const Duration(milliseconds: 1000),
                       child: Container(
-                        height: 350,
+                        height: 300,
                         width: double.infinity,
                         //height: MediaQuery.of(context).size.height / 3.5,
                         decoration: const BoxDecoration(
@@ -69,17 +89,49 @@ class _SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                       ),
+                    ),*/
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1000),
+                      child: GestureDetector(
+                        onTap: () async {
+                          File _imagefilee =
+                              await ImagePickerr().uploadImage('gallery');
+                          setState(() {
+                            _imageFile = _imagefilee;
+                          });
+                        },
+                        child: CircleAvatar(
+                          radius: 77,
+                          backgroundColor: Colors.grey,
+                          child: _imageFile == null
+                              ? CircleAvatar(
+                                  radius: 75,
+                                  backgroundColor: Colors.grey.shade200,
+                                  backgroundImage: const AssetImage(
+                                    "assets/images/user.png",
+                                  ),
+                                )
+                              : CircleAvatar(
+                                  radius: 75,
+                                  backgroundColor: Colors.grey.shade200,
+                                  backgroundImage: Image.file(
+                                    _imageFile!,
+                                    fit: BoxFit.cover,
+                                  ).image,
+                                ),
+                        ),
+                      ),
                     ),
                     const SizedBox(
                       height: 20,
                     ),
-                    FadeInUp(
+                    /* FadeInUp(
                       duration: const Duration(milliseconds: 1200),
                       child: Text(
                         "Anlamlı bir yazı yazılacak",
                         style: TextStyle(fontSize: 15, color: Colors.grey[700]),
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
                 const SizedBox(
@@ -97,9 +149,45 @@ class _SignupScreenState extends State<SignupScreen> {
                             return null;
                           },
                           fieldOnSaved: (value) {
+                            username = value!;
+                          },
+                          lblText: "Kullanıcı Adı",
+                          fieldController: userNameController,
+                          fieldFocusNode: userName_F,
+                          obscureTxt: false),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1200),
+                      child: CustomTextField(
+                          fieldOnSaved: (value) {
+                            bio = value!;
+                          },
+                          lblText: "Bio",
+                          fieldController: bioController,
+                          fieldFocusNode: bio_F,
+                          obscureTxt: false),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1200),
+                      child: CustomTextField(
+                          fieldValidator: (value) {
+                            if (value!.isEmpty) {
+                              return "Bilgileri eksiksiz doldurunuz.";
+                            } else {}
+                            return null;
+                          },
+                          fieldOnSaved: (value) {
                             email = value!;
                           },
                           lblText: "Email",
+                          fieldController: emailController,
+                          fieldFocusNode: email_F,
                           obscureTxt: false),
                     ),
                     const SizedBox(
@@ -118,6 +206,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             password = value!;
                           },
                           lblText: "Şifre",
+                          fieldController: passwordcontroller,
+                          fieldFocusNode: password_F,
                           obscureTxt: true),
                     ),
                     const SizedBox(
@@ -136,6 +226,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             passwordAgain = value!;
                           },
                           lblText: "Şifre tekrar",
+                          fieldController: passwordAgainController,
+                          fieldFocusNode: passwordAgain_F,
                           obscureTxt: true),
                     ),
                   ],
@@ -147,7 +239,34 @@ class _SignupScreenState extends State<SignupScreen> {
                   duration: const Duration(milliseconds: 1500),
                   child: CustomElevatedButton(
                       onTap: () async {
-                        if (formKey.currentState!.validate()) {
+                        try {
+                          await Authentication().signUp(
+                            email: emailController.text,
+                            password: passwordcontroller.text,
+                            passwordAgain: passwordAgainController.text,
+                            username: userNameController.text,
+                            bio: bioController.text,
+                            profile: _imageFile ?? File(''),
+                          );
+                          // Kayıt işlemi başarıyla tamamlandıktan sonra alanları temizle
+                          emailController.clear();
+                          passwordcontroller.clear();
+                          passwordAgainController.clear();
+                          userNameController.clear();
+                          bioController.clear();
+                          setState(() {
+                            _imageFile = null;
+                          });
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ),
+                          );
+                        } on exceptions catch (e) {
+                          dialogBuilder(context, e.message);
+                        }
+                        /* if (formKey.currentState!.validate()) {
                           formKey.currentState!.save();
                           try {
                             //herhnagi bir hata dönecek mi bakalım
@@ -177,7 +296,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           } catch (e) {
                             print(e.toString());
                           }
-                        }
+                        }*/
                       },
                       btnText: "Hesap Oluştur"),
                 ),

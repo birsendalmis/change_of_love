@@ -1,5 +1,6 @@
 import 'package:change_of_love/screens/home_page/drawer_card.dart';
 import 'package:change_of_love/screens/home_page/notifications_page.dart';
+import 'package:change_of_love/screens/home_page/post_card.dart';
 import 'package:change_of_love/screens/home_page/profile_card.dart';
 import 'package:change_of_love/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class _HomeBodyPageState extends State<HomeBodyPage> {
     return Scaffold(
       drawer: const DrawerCard(),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 220, 250, 221),
+        backgroundColor: const Color.fromARGB(255, 220, 250, 221),
         toolbarHeight: 75,
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -34,7 +35,7 @@ class _HomeBodyPageState extends State<HomeBodyPage> {
           CustomIconButton(
             iconSize: 33,
             iconsData: Icons.notifications_active_outlined,
-            iconColor: Color.fromARGB(255, 0, 0, 0),
+            iconColor: const Color.fromARGB(255, 0, 0, 0),
             onTap: () {
               Navigator.push(
                 context,
@@ -60,8 +61,12 @@ class _HomeBodyPageState extends State<HomeBodyPage> {
         ],
       ),
       body: Center(
-        child: Text("Home Body Page"),
-      ),
+          child: ListView.builder(
+        itemCount: 1,
+        itemBuilder: (context, index) {
+          return const PostCard();
+        },
+      )),
     );
     /*Center(
         child: ListView.builder(
@@ -69,6 +74,7 @@ class _HomeBodyPageState extends State<HomeBodyPage> {
         return const PostCard();
       },
       itemCount: 10,
-    ));*/
+    ),
+    );*/
   }
 }
