@@ -1,11 +1,12 @@
+import 'package:change_of_love/add/add_post_screen.dart';
 import 'package:change_of_love/add/change_list_add.dart';
 import 'package:change_of_love/add/library_add.dart';
 import 'package:change_of_love/add/read_list_add.dart';
 import 'package:change_of_love/constants/colors.dart';
-import 'package:change_of_love/message_page/message_page.dart';
+import 'package:change_of_love/screens/message_page/message_page.dart';
 import 'package:change_of_love/screens/home_page/home_body_page.dart';
 import 'package:change_of_love/screens/profile_page/profile_page.dart';
-import 'package:change_of_love/screens/search_page.dart';
+import 'package:change_of_love/screens/search/search_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     const SearchPage(),
     const SizedBox(),
     const MessagePage(),
-    const ProfilePage()
+    ProfilePage()
   ];
   @override
   Widget build(BuildContext context) {
@@ -113,7 +114,16 @@ class _HomePageState extends State<HomePage> {
                 height: 20,
               ),
               EkleRow(
-                text: "Kütüphanye",
+                  text: "Gönderi",
+                  onTapp: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddPostScreen()),
+                    );
+                  }),
+              EkleRow(
+                text: "Kütüphaneye",
                 onTapp: () {
                   Navigator.push(
                     context,

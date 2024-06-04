@@ -6,7 +6,7 @@ import 'package:change_of_love/util/exeption.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Authentication {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<void> login({
     required String email,
@@ -14,7 +14,7 @@ class Authentication {
   }) async {
     try {
       if (email.isNotEmpty && password.isNotEmpty) {
-        await _auth.signInWithEmailAndPassword(
+        await auth.signInWithEmailAndPassword(
             email: email.trim(), password: password.trim());
       } else {
         throw exceptions("Tüm alanları doldurunuz");
@@ -32,15 +32,14 @@ class Authentication {
     required String bio,
     required File profile,
   }) async {
-    // ignore: non_constant_identifier_names
-    String URL;
+    String? URL;
     try {
       if (email.isNotEmpty &&
           password.isNotEmpty &&
           username.isNotEmpty &&
           bio.isNotEmpty) {
         if (password == passwordAgain) {
-          await _auth.createUserWithEmailAndPassword(
+          await auth.createUserWithEmailAndPassword(
             email: email.trim(),
             password: password.trim(),
           );
@@ -60,7 +59,7 @@ class Authentication {
             bio: bio,
             profile: URL == ''
                 ? 'https://firebasestorage.googleapis.com/v0/b/instagram-8a227.appspot.com/o/person.png?alt=media&token=c6fcbe9d-f502-4aa1-8b4b-ec37339e78ab'
-                : URL,
+                : URL!,
           );
         } else {
           throw exceptions("Şifre ve şifre tekrar aynı olmalıdır");

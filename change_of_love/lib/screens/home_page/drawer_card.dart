@@ -4,6 +4,7 @@ import 'package:change_of_love/screens/lists/library.dart';
 import 'package:change_of_love/screens/lists/okumak_istedikleri.dart';
 import 'package:change_of_love/screens/lists/takas_edilecekler.dart';
 import 'package:change_of_love/screens/lists/takas_edilenler.dart';
+import 'package:change_of_love/screens/lists/teklifler.dart';
 import 'package:flutter/material.dart';
 
 class DrawerCard extends StatefulWidget {
@@ -104,13 +105,25 @@ class _DrawerCardState extends State<DrawerCard> {
               },
             ),
             DrawerListTile(
+              titleTxt: "Teklifler",
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Teklifler()),
+                );
+              },
+            ),
+            DrawerListTile(
               titleTxt: "Kütüphanem",
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MyLibrary(),
+                    builder: (context) => MyLibrary(
+                      bookInfo: {},
+                    ),
                   ),
                 );
               },
@@ -146,7 +159,9 @@ class _DrawerCardState extends State<DrawerCard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const OkumakIstedikleri(),
+                    builder: (context) => OkumakIstedikleri(
+                      newBook: {},
+                    ),
                   ),
                 );
               },
@@ -173,8 +188,10 @@ class _DrawerCardState extends State<DrawerCard> {
 class DrawerListTile extends StatelessWidget {
   final String titleTxt;
   final VoidCallback onPressed;
+  final Key? key; // Key tipinde key parametresi eklendi
   const DrawerListTile({
-    super.key,
+    this.key, // super.key yerine key kullanıldı
+    //  super.key,
     required this.titleTxt,
     required this.onPressed,
   });

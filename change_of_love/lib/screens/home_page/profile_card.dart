@@ -12,10 +12,10 @@ class ProfileCard extends StatelessWidget {
       title: const Column(
         children: [
           CircleAvatar(
-            radius: 30,
-            backgroundImage: AssetImage("assets/images/logo.png"),
+            radius: 40,
+            backgroundImage: AssetImage("assets/images/birsen.jpeg"),
           ),
-          Text("Kullanıcı Adı")
+          Text("Birsen DALMIŞ")
         ],
       ),
       content: const SizedBox(
@@ -31,13 +31,19 @@ class ProfileCard extends StatelessWidget {
                   Column(
                     children: [
                       Text("354"),
-                      Text("Takip"),
+                      Text(
+                        "Takip",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                   Column(
                     children: [
-                      Text("354"),
-                      Text("Kütüphanem"),
+                      Text("237"),
+                      Text(
+                        "Kütüphanem",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                 ],
@@ -47,14 +53,20 @@ class ProfileCard extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      Text("354"),
-                      Text("Takipçi"),
+                      Text("17634"),
+                      Text(
+                        "Takipçi",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                   Column(
                     children: [
-                      Text("354"),
-                      Text("Okuma Listem"),
+                      Text("152"),
+                      Text(
+                        "Okuma Listem",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                     ],
                   ),
                 ],
@@ -77,7 +89,7 @@ class ProfileCard extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
+                    builder: (context) => ProfilePage(),
                   ),
                 );
               },

@@ -1,3 +1,4 @@
+import 'package:change_of_love/screens/search/search_page.dart';
 import 'package:flutter/material.dart';
 
 class ReadListAdd extends StatefulWidget {
@@ -10,10 +11,10 @@ class ReadListAdd extends StatefulWidget {
 class _ReadListAddState extends State<ReadListAdd> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("Read List Add"),
-      ),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Okuma Listesine Ekleme Yap"),
+        ),
+        body: SearchPage());
   }
 }

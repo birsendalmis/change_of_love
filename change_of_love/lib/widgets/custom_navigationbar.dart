@@ -1,8 +1,8 @@
 import 'package:change_of_love/add/add_page.dart';
 import 'package:change_of_love/screens/home_page/home_page.dart';
-import 'package:change_of_love/message_page/message_page.dart';
+import 'package:change_of_love/screens/message_page/message_page.dart';
 import 'package:change_of_love/screens/profile_page/profile_page.dart';
-import 'package:change_of_love/screens/search_page.dart';
+import 'package:change_of_love/screens/search/search_page.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +21,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
     const SearchPage(),
     const AddPage(),
     const MessagePage(),
-    const ProfilePage()
+    ProfilePage()
   ];
   @override
   Widget build(BuildContext context) {

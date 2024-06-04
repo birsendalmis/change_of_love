@@ -1,3 +1,4 @@
+import 'package:change_of_love/screens/search/search_page.dart';
 import 'package:flutter/material.dart';
 
 class LibraryAdd extends StatefulWidget {
@@ -10,10 +11,10 @@ class LibraryAdd extends StatefulWidget {
 class _LibraryAddState extends State<LibraryAdd> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text("Library List Add"),
-      ),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Kütüphaneye Ekleme Yap"),
+        ),
+        body: SearchPage());
   }
 }

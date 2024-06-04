@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 
 class FirebaseFirestor {
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<bool> createUser({
     required String email,
@@ -14,10 +14,7 @@ class FirebaseFirestor {
     required String bio,
     required String profile,
   }) async {
-    await _firebaseFirestore
-        .collection('users')
-        .doc(_auth.currentUser!.uid)
-        .set({
+    await firebaseFirestore.collection('users').doc(auth.currentUser!.uid).set({
       'email': email,
       'username': username,
       'bio': bio,
@@ -30,19 +27,26 @@ class FirebaseFirestor {
 
   Future<Usermodel> getUser() async {
     try {
-      final user = await _firebaseFirestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .get();
-      final snapuser = user.data()!;
-      return Usermodel(
-          snapuser['bio'],
-          snapuser['email'],
-          snapuser['followers'],
-          snapuser['following'],
-          snapuser['profile'],
-          snapuser['username']);
+      // Kullanıcı oturumu açmışsa devam et
+      if (auth.currentUser != null) {
+        final user = await firebaseFirestore
+            .collection('users')
+            .doc(auth.currentUser!.uid)
+            .get();
+        final snapuser = user.data()!;
+        return Usermodel(
+            snapuser['bio'],
+            snapuser['email'],
+            snapuser['followers'],
+            snapuser['following'],
+            snapuser['profile'],
+            snapuser['username']);
+      } else {
+        // Kullanıcı oturumu açmamışsa, uygun bir hata işleyicisiyle hata döndür
+        throw Exception("Kullanıcı oturumu açmamış");
+      }
     } on FirebaseException catch (e) {
+      // Firebase'tan gelen hataları yakalayarak uygun şekilde işle
       throw exceptions(e.message.toString());
     }
   }
@@ -55,13 +59,13 @@ class FirebaseFirestor {
     var uid = const Uuid().v4();
     DateTime data = DateTime.now();
     Usermodel user = await getUser();
-    await _firebaseFirestore.collection('posts').doc(uid).set({
+    await firebaseFirestore.collection('posts').doc(uid).set({
       'postImage': postImage,
       'username': user.username,
       'profileImage': user.profile,
       'caption': caption,
       'location': location,
-      'uid': _auth.currentUser!.uid,
+      'uid': auth.currentUser!.uid,
       'postId': uid,
       'like': [],
       'time': data
@@ -69,7 +73,7 @@ class FirebaseFirestor {
     return true;
   }
 
-  Future<bool> creatReels({
+  /*Future<bool> creatReels({
     required String video,
     required String caption,
   }) async {
@@ -87,7 +91,7 @@ class FirebaseFirestor {
       'time': data
     });
     return true;
-  }
+  }*/
 
   Future<bool> comments({
     required String comment,
@@ -96,7 +100,7 @@ class FirebaseFirestor {
   }) async {
     var uid = const Uuid().v4();
     Usermodel user = await getUser();
-    await _firebaseFirestore
+    await firebaseFirestore
         .collection(type)
         .doc(uidd)
         .collection('comments')
@@ -119,11 +123,11 @@ class FirebaseFirestor {
     String res = 'some error';
     try {
       if (like.contains(uid)) {
-        _firebaseFirestore.collection(type).doc(postId).update({
+        firebaseFirestore.collection(type).doc(postId).update({
           'like': FieldValue.arrayRemove([uid])
         });
       } else {
-        _firebaseFirestore.collection(type).doc(postId).update({
+        firebaseFirestore.collection(type).doc(postId).update({
           'like': FieldValue.arrayUnion([uid])
         });
       }
