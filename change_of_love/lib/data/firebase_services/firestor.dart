@@ -12,12 +12,16 @@ class FirebaseFirestor {
     required String email,
     required String username,
     required String bio,
+    required String city,
+    required String district,
     required String profile,
   }) async {
     await firebaseFirestore.collection('users').doc(auth.currentUser!.uid).set({
       'email': email,
       'username': username,
       'bio': bio,
+      'city': city,
+      'district': district,
       'profile': profile,
       'followers': [],
       'following': [],
@@ -35,12 +39,15 @@ class FirebaseFirestor {
             .get();
         final snapuser = user.data()!;
         return Usermodel(
-            snapuser['bio'],
-            snapuser['email'],
-            snapuser['followers'],
-            snapuser['following'],
-            snapuser['profile'],
-            snapuser['username']);
+          snapuser['bio'],
+          snapuser['email'],
+          snapuser['followers'],
+          snapuser['following'],
+          snapuser['profile'],
+          snapuser['username'],
+          snapuser['city'],
+          snapuser['district'],
+        );
       } else {
         // Kullanıcı oturumu açmamışsa, uygun bir hata işleyicisiyle hata döndür
         throw Exception("Kullanıcı oturumu açmamış");

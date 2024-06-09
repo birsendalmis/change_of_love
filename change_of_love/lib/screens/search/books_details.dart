@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:change_of_love/screens/lists/library.dart';
 import 'package:change_of_love/screens/lists/okumak_istedikleri.dart';
+import 'package:change_of_love/screens/lists/takas_edilecekler.dart';
 import 'package:change_of_love/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +23,31 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
     volumeInfo = widget.volumeInfo;
   }
 
+  //kütüphaneye kitap ekleme işlemi
+  Future<void> addToLibrary() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String>? libraryList = prefs.getStringList('kutuphanem') ?? [];
+
+    final Map<String, String> bookInfo = {
+      'bookName': volumeInfo['title'] ?? '',
+      'authorName':
+          volumeInfo['authors'] != null ? volumeInfo['authors'].join(', ') : '',
+      'bookImage': volumeInfo['imageLinks']?['thumbnail'] ?? '',
+    };
+
+    final jsonString = jsonEncode(bookInfo);
+    libraryList?.add(jsonString);
+    await prefs.setStringList('kutuphanem', libraryList!);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyLibrary(newBook: bookInfo),
+      ),
+    );
+  }
+
+//okumak istediklerim sayfasına kitap eklemek için kullanılıyor.
   Future<void> addToReadingList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final List<String>? readingList =
@@ -48,6 +75,31 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
       context,
       MaterialPageRoute(
         builder: (context) => OkumakIstedikleri(newBook: bookInfo),
+      ),
+    );
+  }
+  //takas edilecekler listesine kitap ekleme işlemi
+
+  Future<void> addToTradeList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final List<String>? tradeList =
+        prefs.getStringList('takas_edileceklerim') ?? [];
+
+    final Map<String, String> bookInfo = {
+      'bookName': volumeInfo['title'] ?? '',
+      'authorName':
+          volumeInfo['authors'] != null ? volumeInfo['authors'].join(', ') : '',
+      'bookImage': volumeInfo['imageLinks']?['thumbnail'] ?? '',
+    };
+
+    final jsonString = jsonEncode(bookInfo);
+    tradeList?.add(jsonString);
+    await prefs.setStringList('takas_edileceklerim', tradeList!);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TakasEdilecekler(newBook: bookInfo),
       ),
     );
   }
@@ -102,7 +154,9 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 Divider(thickness: 1),
                 CustomElevatedButton(
-                  onTap: () {},
+                  onTap: () {
+                    addToLibrary();
+                  },
                   btnText: "Kütüphane",
                   btnHeight: 30,
                   btnColor: const Color.fromARGB(255, 232, 187, 119),
@@ -122,7 +176,9 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                   btnColor: const Color.fromARGB(255, 232, 187, 119),
                 ),
                 CustomElevatedButton(
-                  onTap: () {},
+                  onTap: () {
+                    addToTradeList();
+                  },
                   btnText: "Takas Edilecekler",
                   btnHeight: 30,
                   btnColor: const Color.fromARGB(255, 232, 187, 119),

@@ -122,7 +122,7 @@ class _DrawerCardState extends State<DrawerCard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => MyLibrary(
-                      bookInfo: {},
+                      newBook: {},
                     ),
                   ),
                 );
@@ -147,7 +147,9 @@ class _DrawerCardState extends State<DrawerCard> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const TakasEdilecekler(),
+                    builder: (context) => const TakasEdilecekler(
+                      newBook: {},
+                    ),
                   ),
                 );
               },

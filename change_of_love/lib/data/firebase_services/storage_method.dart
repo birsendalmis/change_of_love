@@ -20,3 +20,5 @@ class StorageMethod {
     }
   }
 }
+
+//StorageMethod sınıfını profil fotoğrafı yüklemek için kullanıyoruz.

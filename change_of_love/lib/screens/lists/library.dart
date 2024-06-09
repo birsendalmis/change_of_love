@@ -1,16 +1,61 @@
-import 'package:change_of_love/widgets/custom_book_list_tile.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyLibrary extends StatefulWidget {
-  final Map<String, dynamic> bookInfo;
-  const MyLibrary({super.key, required this.bookInfo});
+  final Map<String, String> newBook;
+  const MyLibrary({
+    super.key,
+    required this.newBook,
+  });
 
   @override
   State<MyLibrary> createState() => _MyLibraryState();
 }
 
 class _MyLibraryState extends State<MyLibrary> {
-  List<Map<String, dynamic>> libraryBooks = [];
+  List<Map<String, String>> books = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadBooks();
+    // Eklenen yeni kitabı listeye ekleyin
+    if (widget.newBook.isNotEmpty) {
+      books.add(widget.newBook);
+    }
+  }
+
+  Future<void> loadBooks() async {
+    print('loadBooks is called');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<String>? savedBooks = prefs.getStringList('kutuphanem');
+      if (savedBooks != null) {
+        setState(() {
+          books = savedBooks
+              .where((book) => book.isNotEmpty && _isValidJson(book))
+              .map((jsonString) =>
+                  Map<String, String>.from(json.decode(jsonString)))
+              .toList();
+        });
+      }
+    } catch (error) {
+      print('loadBooks Error: $error');
+    }
+  }
+
+  bool _isValidJson(String jsonString) {
+    try {
+      json.decode(jsonString);
+      return true;
+    } catch (e) {
+      print('Invalid JSON: $jsonString');
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,72 +73,20 @@ class _MyLibraryState extends State<MyLibrary> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            /*
-            CustomBookListTile(
-                authorName: "Frank Herbert",
-                bookName: "Dune",
-                bookAssetName: "assets/images/app_book2.jpeg"),
-            CustomBookListTile(
-                authorName: "Antoine de Saint-Exupéry",
-                bookName: "Küçük Prens",
-                bookAssetName: "assets/images/app_book4.jpeg"),
-            CustomBookListTile(
-                authorName: "Jules Verne",
-                bookName: "Doktor Ox'un Deneyi",
-                bookAssetName: "assets/images/app_book3.jpeg"),
-            CustomBookListTile(
-                authorName: "Matt Haig",
-                bookName: "Gece Yarısı Kütüphanesi",
-                bookAssetName: "assets/images/app_book1.jpeg"),
-            CustomBookListTile(
-                authorName: " İlber Ortaylı",
-                bookName: "İnsan Geleceğini Nasıl Kurar?",
-                bookAssetName: "assets/images/app_book6.jpeg"),
-            CustomBookListTile(
-                authorName: "Büşra Nur",
-                bookName: "Düş Gemisi",
-                bookAssetName: "assets/images/app_book5.jpeg"),
-            CustomBookListTile(
-                authorName: "Joseph Murphy",
-                bookName: "Bilinçaltının Gücü ",
-                bookAssetName: "assets/images/app_book7.jpeg"),
-            CustomBookListTile(
-                authorName: "Mert Arık",
-                bookName: "Çantamdan Fil Çıktı",
-                bookAssetName: "assets/images/app_book8.jpeg"),
-            CustomBookListTile(
-                authorName: "Sharon M. Draper",
-                bookName: "İçimdeki Müzik",
-                bookAssetName: "assets/images/app_book9.jpeg"),
-            CustomBookListTile(
-                authorName: "Jeffrey E. Young , Janet Klosko",
-                bookName: "Hayatı Yeniden Keşfedin",
-                bookAssetName: "assets/images/app_book10.jpeg"),
-            CustomBookListTile(
-                authorName: "Yu Hua",
-                bookName: "Yaşamak",
-                bookAssetName: "assets/images/app_book11.jpeg"),
-            CustomBookListTile(
-                authorName: "Paulo Coelho",
-                bookName: "Simyacı",
-                bookAssetName: "assets/images/app_book12.jpeg"),
-            CustomBookListTile(
-                authorName: "Hwang Bo - Reum",
-                bookName: "Hyunam - Dong Kitabevi",
-                bookAssetName: "assets/images/app_book13.jpeg"),
-            CustomBookListTile(
-                authorName: "Anthony Burgess",
-                bookName: "Otomatik Portakal",
-                bookAssetName: "assets/images/app_book14.jpeg"),
-            CustomBookListTile(
-                authorName: "Doğan Cüceloğlu",
-                bookName: "Var mısın?",
-                bookAssetName: "assets/images/app_book15.jpeg"),
-            CustomBookListTile(
-                authorName: "Mert Arık",
-                bookName: "Uzaya Giden Tren",
-                bookAssetName: "assets/images/app_book16.jpeg"),
-          */
+            // Kitap listesi için ListView.builder kullanın
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: books.length,
+              itemBuilder: (context, index) {
+                final book = books[index];
+                return ListTile(
+                  title: Text(book['bookName'] ?? ''),
+                  subtitle: Text(book['authorName'] ?? ''),
+                  leading: Image.network(book['bookImage'] ?? ''),
+                );
+              },
+            ),
           ],
         ),
       ),

@@ -22,6 +22,11 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   late String email, password, passwordAgain, username, bio;
+  late String city, district;
+  final cityController = TextEditingController();
+  FocusNode city_F = FocusNode();
+  final districtController = TextEditingController();
+  FocusNode district_F = FocusNode();
   final emailController = TextEditingController();
   FocusNode email_F = FocusNode();
   final passwordcontroller = TextEditingController();
@@ -75,7 +80,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   Column(
                     children: <Widget>[
                       const SizedBox(
-                        height: 80,
+                        height: 50,
                       ),
                       /*FadeInUp(
                         duration: const Duration(milliseconds: 1000),
@@ -95,10 +100,10 @@ class _SignupScreenState extends State<SignupScreen> {
                         duration: const Duration(milliseconds: 1000),
                         child: GestureDetector(
                           onTap: () async {
-                            File _imagefilee =
+                            File imageFile =
                                 await ImagePickerr().uploadImage('gallery');
                             setState(() {
-                              _imageFile = _imagefilee;
+                              _imageFile = imageFile;
                             });
                           },
                           child: CircleAvatar(
@@ -126,13 +131,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      /* FadeInUp(
-                        duration: const Duration(milliseconds: 1200),
-                        child: Text(
-                          "Anlamlı bir yazı yazılacak",
-                          style: TextStyle(fontSize: 15, color: Colors.grey[700]),
-                        ),
-                      ),*/
                     ],
                   ),
                   const SizedBox(
@@ -160,6 +158,42 @@ class _SignupScreenState extends State<SignupScreen> {
                       const SizedBox(
                         height: 10,
                       ),
+                      FadeInUp(
+                        duration: const Duration(milliseconds: 1700),
+                        child: CustomTextField(
+                          fieldValidator: (value) {
+                            if (value!.isEmpty) {
+                              return "Bilgileri eksiksiz doldurunuz.";
+                            }
+                            return null;
+                          },
+                          fieldOnSaved: (value) {
+                            city = value!;
+                          },
+                          lblText: "İl",
+                          fieldController: cityController,
+                          obscureTxt: false,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      FadeInUp(
+                        duration: const Duration(milliseconds: 1800),
+                        child: CustomTextField(
+                          fieldValidator: (value) {
+                            if (value!.isEmpty) {
+                              return "Bilgileri eksiksiz doldurunuz.";
+                            }
+                            return null;
+                          },
+                          fieldOnSaved: (value) {
+                            district = value!;
+                          },
+                          lblText: "İlçe",
+                          fieldController: districtController,
+                          obscureTxt: false,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       FadeInUp(
                         duration: const Duration(milliseconds: 1200),
                         child: CustomTextField(
@@ -240,6 +274,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     duration: const Duration(milliseconds: 1500),
                     child: CustomElevatedButton(
                         onTap: () async {
+                          formKey.currentState!.save();
                           try {
                             await Authentication().signUp(
                               email: emailController.text,
@@ -247,7 +282,15 @@ class _SignupScreenState extends State<SignupScreen> {
                               passwordAgain: passwordAgainController.text,
                               username: userNameController.text,
                               bio: bioController.text,
+                              city: cityController.text,
+                              district: districtController.text,
                               profile: _imageFile ?? File(''),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text("Kayıt işlemi başarıyla tamamlandı"),
+                              ),
                             );
                             // Kayıt işlemi başarıyla tamamlandıktan sonra alanları temizle
                             emailController.clear();
@@ -255,6 +298,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             passwordAgainController.clear();
                             userNameController.clear();
                             bioController.clear();
+                            cityController.clear();
+                            districtController.clear();
                             setState(() {
                               _imageFile = null;
                             });

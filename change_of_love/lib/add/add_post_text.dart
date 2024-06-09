@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:change_of_love/data/firebase_services/firestor.dart';
-import 'package:change_of_love/data/firebase_services/storage.dart';
+import 'package:change_of_love/data/firebase_services/storage_method.dart';
 import 'package:flutter/material.dart';
 
 class AddPostTextScreen extends StatefulWidget {

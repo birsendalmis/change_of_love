@@ -1,10 +1,12 @@
 import 'package:change_of_love/constants/colors.dart';
+import 'package:change_of_love/data/firebase_services/firebase_storage_service.dart';
+import 'package:change_of_love/data/firebase_services/firestor.dart';
+import 'package:change_of_love/data/model/user_model.dart';
 import 'package:change_of_love/screens/profile_page/settings.dart';
 import 'package:change_of_love/widgets/custom_icon_button.dart';
 import 'package:change_of_love/widgets/custom_list_button.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,6 +16,60 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final _auth = FirebaseAuth.instance;
+  final _storageService =
+      FirebaseStorageService(); // FirebaseStorageService eklemeyi unutma
+  String? _userProfileImageUrl;
+  String? _username;
+  String? _bio;
+  int? _followerCount;
+  int? _followingCount;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      Usermodel user = await FirebaseFirestor().getUser();
+      String? imageUrl =
+          await _storageService.getUserProfileImageUrl(_auth.currentUser!.uid);
+      setState(() {
+        _username = user.username;
+        _bio = user.bio;
+        _followerCount = user.followers.length;
+        _followingCount = user.following.length;
+        _userProfileImageUrl = imageUrl;
+        _isLoading = false; // Yükleme işlemi tamamlandı
+      });
+    } catch (e) {
+      print("Kullanıcı bilgileri yüklenirken hata oluştu: $e");
+      setState(() {
+        _isLoading =
+            false; // Hata durumunda da yükleme işlemi tamamlandı olarak ayarlıyoruz
+      });
+    }
+  }
+
+  /* @override
+  void initState() {
+    super.initState();
+    _loadUserProfileImage();
+  }
+
+  Future<void> _loadUserProfileImage() async {
+    String? userId = _auth.currentUser?.uid;
+    if (userId != null) {
+      String? imageUrl = await _storageService.getUserProfileImageUrl(userId);
+      setState(() {
+        _userProfileImageUrl = imageUrl;
+      });
+    }
+  }
+*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,24 +107,31 @@ class _ProfilePageState extends State<ProfilePage> {
                               bottomRight: Radius.circular(50)),
                         ),
                         height: 300,
-                        child: const Column(
+                        child: Column(
                           children: [
                             Column(
                               children: [
                                 CircleAvatar(
                                   radius: 50,
-                                  backgroundImage:
-                                      AssetImage("assets/images/birsen.jpeg"),
+                                  backgroundImage: _userProfileImageUrl != null
+                                      ? NetworkImage(_userProfileImageUrl!)
+                                      : const AssetImage(
+                                              "assets/images/user.png")
+                                          as ImageProvider,
+                                  backgroundColor: Colors.transparent,
                                 ),
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Text(
-                                  "Birsen DALMIŞ",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18),
-                                ),
+                                _isLoading
+                                    ? const CircularProgressIndicator()
+                                    : Text(
+                                        _username ??
+                                            "Kullanıcı adı yüklenemedi",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
+                                      ),
                               ],
                             ),
                             SizedBox(
@@ -80,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Column(
                                   children: [
                                     Text(
-                                      "17634",
+                                      _followerCount?.toString() ?? "0",
                                     ),
                                     Text(
                                       "Takipçi",
@@ -91,7 +154,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 Column(
                                   children: [
-                                    Text("354"),
+                                    Text(
+                                      _followingCount?.toString() ?? "0",
+                                    ),
                                     Text(
                                       "Takip Edilen",
                                       style: TextStyle(
@@ -183,7 +248,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           padding: const EdgeInsets.all(12),
                           child: Column(
                             children: [
-                              const Expanded(
+                              Expanded(
                                 child: Scrollbar(
                                   child: SingleChildScrollView(
                                     child: Column(
@@ -197,10 +262,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                         SizedBox(
                                           height: 10,
                                         ),
-                                        Text(
-                                          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                                          overflow: TextOverflow.visible,
-                                        ),
+                                        _isLoading
+                                            ? const CircularProgressIndicator()
+                                            : Text(
+                                                _bio ??
+                                                    "", // Eğer biyografi yüklenmediyse boş bir metin göster
+                                                overflow: TextOverflow.visible,
+                                              )
                                       ],
                                     ),
                                   ),
@@ -238,3 +306,10 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+ // BoxFit parametresi ile resmi sığdırma işlemini gerçekleştiriyoruz
+  // BoxFit.cover, resmi tamamen kaplayacak şekilde sığdırır
+  // BoxFit.fill, resmi tamamen dolduracak şekilde sığdırır
+  // BoxFit.contain, resmi tamamen sığdırmaya çalışırken, orijinal oranlarını korur
+  // BoxFit.fitWidth, resmi yatay yönde tamamen sığdırmaya çalışırken, orijinal oranlarını korur
+  // BoxFit.fitHeight, resmi dikey yönde tamamen sığdırmaya çalışırken, orijinal oranlarını korur
+  // BoxFit.scaleDown, resmi tamamen sığdırmaya çalışırken, orijinal boyutlarından büyükse küçültür
