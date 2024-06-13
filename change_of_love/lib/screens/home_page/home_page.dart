@@ -1,12 +1,12 @@
-import 'package:change_of_love/add/add_post_screen.dart';
 import 'package:change_of_love/add/change_list_add.dart';
 import 'package:change_of_love/add/library_add.dart';
 import 'package:change_of_love/add/read_list_add.dart';
 import 'package:change_of_love/constants/colors.dart';
 import 'package:change_of_love/screens/message_page/message_page.dart';
 import 'package:change_of_love/screens/home_page/home_body_page.dart';
+import 'package:change_of_love/screens/post/gallery_picker_page.dart';
 import 'package:change_of_love/screens/profile_page/profile_page.dart';
-import 'package:change_of_love/screens/search/search_page.dart';
+import 'package:change_of_love/screens/search/city_search.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   int myCurrentIndex = 0;
   List pages = [
     const HomeBodyPage(),
-    const SearchPage(),
+    SearchPage(),
     const SizedBox(),
     const MessagePage(),
     ProfilePage()
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) {
         return Container(
-          height: 270,
+          height: 273,
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(40),
@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const AddPostScreen()),
+                          builder: (context) => GalleryPickerPage()),
                     );
                   }),
               EkleRow(

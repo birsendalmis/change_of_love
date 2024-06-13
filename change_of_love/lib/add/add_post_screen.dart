@@ -1,4 +1,4 @@
-import 'dart:io';
+/*import 'dart:io';
 
 import 'package:change_of_love/add/add_post_text.dart';
 import 'package:flutter/material.dart';
@@ -169,3 +169,4 @@ class _AddPostScreenState extends State<AddPostScreen> {
     );
   }
 }
+*/

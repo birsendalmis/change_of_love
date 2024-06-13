@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'package:change_of_love/screens/lists/library.dart';
 import 'package:change_of_love/screens/lists/okumak_istedikleri.dart';
 import 'package:change_of_love/screens/lists/takas_edilecekler.dart';
 import 'package:change_of_love/widgets/custom_elevated_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BookDetailsPage extends StatefulWidget {
   final Map<String, dynamic> volumeInfo;
@@ -25,9 +25,6 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
 
   //kütüphaneye kitap ekleme işlemi
   Future<void> addToLibrary() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<String>? libraryList = prefs.getStringList('kutuphanem') ?? [];
-
     final Map<String, String> bookInfo = {
       'bookName': volumeInfo['title'] ?? '',
       'authorName':
@@ -35,9 +32,19 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
       'bookImage': volumeInfo['imageLinks']?['thumbnail'] ?? '',
     };
 
-    final jsonString = jsonEncode(bookInfo);
-    libraryList?.add(jsonString);
-    await prefs.setStringList('kutuphanem', libraryList!);
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('kutuphane')
+            .add(bookInfo);
+      }
+    } catch (e) {
+      print('Error adding book to library: $e');
+      throw e;
+    }
 
     Navigator.pushReplacement(
       context,
@@ -49,11 +56,6 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
 
 //okumak istediklerim sayfasına kitap eklemek için kullanılıyor.
   Future<void> addToReadingList() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<String>? readingList =
-        prefs.getStringList('okumak_istediklerim') ?? [];
-
-    // Kitap bilgilerini JSON formatında oluştur
     final Map<String, String> bookInfo = {
       'bookName': volumeInfo['title'] ?? '',
       'authorName':
@@ -61,16 +63,20 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
       'bookImage': volumeInfo['imageLinks']?['thumbnail'] ?? '',
     };
 
-    // Kitap bilgilerini JSON formatına dönüştür
-    final jsonString = jsonEncode(bookInfo);
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('okumak_istedikleri')
+            .add(bookInfo);
+      }
+    } catch (e) {
+      print('Error adding book to reading list: $e');
+      throw e;
+    }
 
-    // JSON formatındaki kitap bilgilerini listeye ekle
-    readingList?.add(jsonString);
-
-    // Güncellenmiş okumak istedikleri listesini kaydet
-    await prefs.setStringList('okumak_istediklerim', readingList!);
-
-    // Okumak istedikleri sayfasına yönlendir ve yeni kitabı göster
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -78,13 +84,9 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
       ),
     );
   }
+
   //takas edilecekler listesine kitap ekleme işlemi
-
   Future<void> addToTradeList() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<String>? tradeList =
-        prefs.getStringList('takas_edileceklerim') ?? [];
-
     final Map<String, String> bookInfo = {
       'bookName': volumeInfo['title'] ?? '',
       'authorName':
@@ -92,9 +94,19 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
       'bookImage': volumeInfo['imageLinks']?['thumbnail'] ?? '',
     };
 
-    final jsonString = jsonEncode(bookInfo);
-    tradeList?.add(jsonString);
-    await prefs.setStringList('takas_edileceklerim', tradeList!);
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('takas_edilecekler')
+            .add(bookInfo);
+      }
+    } catch (e) {
+      print('Error adding book to trade list: $e');
+      throw e;
+    }
 
     Navigator.pushReplacement(
       context,

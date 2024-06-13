@@ -3,8 +3,11 @@ import 'package:change_of_love/data/firebase_services/firebase_storage_service.d
 import 'package:change_of_love/data/firebase_services/firestor.dart';
 import 'package:change_of_love/data/model/user_model.dart';
 import 'package:change_of_love/screens/profile_page/settings.dart';
+import 'package:change_of_love/screens/search/selected_book_detail.dart';
 import 'package:change_of_love/widgets/custom_icon_button.dart';
 import 'package:change_of_love/widgets/custom_list_button.dart';
+import 'package:change_of_love/widgets/custom_user_post.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -17,19 +20,30 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final _auth = FirebaseAuth.instance;
-  final _storageService =
-      FirebaseStorageService(); // FirebaseStorageService eklemeyi unutma
+  final _storageService = FirebaseStorageService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? _userProfileImageUrl;
   String? _username;
   String? _bio;
   int? _followerCount;
   int? _followingCount;
   bool _isLoading = true;
+  int _selectedIndex = 0;
+  List<Map<String, String>> books = [];
+  List<Map<String, String>> _itemsToExchange = [];
+  List<Map<String, String>> _readingList =
+      []; // _readingList değişkenini tanımla
+  List<Map<String, dynamic>> _userPosts = [];
+  String? _locationInfo; // Eklenen il-ilçe bilgisi
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _loadLibraryBooks();
+    _loadReadingList();
+    _loadItemsToExchange();
+    _loadUserPosts();
   }
 
   Future<void> _loadUserProfile() async {
@@ -43,33 +57,202 @@ class _ProfilePageState extends State<ProfilePage> {
         _followerCount = user.followers.length;
         _followingCount = user.following.length;
         _userProfileImageUrl = imageUrl;
-        _isLoading = false; // Yükleme işlemi tamamlandı
+        _isLoading = false;
+        // Kullanıcı adı ve il-ilçe bilgisini birleştirerek gösterilecek string'i oluştur
+        String location = '${user.city} - ${user.district}';
+        _locationInfo = location;
       });
     } catch (e) {
       print("Kullanıcı bilgileri yüklenirken hata oluştu: $e");
       setState(() {
-        _isLoading =
-            false; // Hata durumunda da yükleme işlemi tamamlandı olarak ayarlıyoruz
+        _isLoading = false;
       });
     }
   }
 
-  /* @override
-  void initState() {
-    super.initState();
-    _loadUserProfileImage();
-  }
+  Future<void> _loadLibraryBooks() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final QuerySnapshot<Map<String, dynamic>> snapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .collection('kutuphane')
+                .get();
 
-  Future<void> _loadUserProfileImage() async {
-    String? userId = _auth.currentUser?.uid;
-    if (userId != null) {
-      String? imageUrl = await _storageService.getUserProfileImageUrl(userId);
-      setState(() {
-        _userProfileImageUrl = imageUrl;
-      });
+        setState(() {
+          books = snapshot.docs
+              .map((doc) => Map<String, String>.from(doc.data()))
+              .toList();
+        });
+      }
+    } catch (error) {
+      print('loadBooks Error: $error');
     }
   }
-*/
+
+  Future<void> _loadReadingList() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final QuerySnapshot<Map<String, dynamic>> snapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .collection('okumak_istedikleri')
+                .get();
+
+        setState(() {
+          _readingList = snapshot.docs
+              .map((doc) => Map<String, String>.from(doc.data()))
+              .toList();
+        });
+      }
+    } catch (error) {
+      print('loadReadingList Error: $error');
+    }
+  }
+
+  Future<void> _loadItemsToExchange() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final QuerySnapshot<Map<String, dynamic>> snapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .collection('takas_edilecekler')
+                .get();
+
+        setState(() {
+          _itemsToExchange = snapshot.docs
+              .map((doc) => Map<String, String>.from(doc.data()))
+              .toList();
+        });
+      }
+    } catch (error) {
+      print('loadItemsToExchange Error: $error');
+    }
+  }
+
+  Future<void> _loadUserPosts() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final QuerySnapshot<Map<String, dynamic>> snapshot = await _firestore
+            .collection('posts')
+            .where('uid', isEqualTo: user.uid)
+            .get();
+
+        print(
+            'Postlar: ${snapshot.docs.map((doc) => doc.data()).toList()}'); // Veri kontrolü için
+
+        setState(() {
+          _userPosts = snapshot.docs.map((doc) => doc.data()).toList();
+        });
+      }
+    } catch (error) {
+      print('loadUserPosts Error: $error');
+    }
+  }
+
+  Widget _buildContent() {
+    switch (_selectedIndex) {
+      case 0:
+        return ListView.builder(
+          itemCount: _userPosts.length,
+          itemBuilder: (context, index) {
+            final post = _userPosts[index];
+            return CustomUserPost(
+              postId: post['postId'],
+              userName: _username ?? '',
+              postAssetName: post['postImage'],
+              postText: post['caption'],
+              userAssetName: _userProfileImageUrl ?? '',
+            );
+          },
+        );
+      case 1:
+        return ListView.builder(
+          itemCount: books.length,
+          itemBuilder: (context, index) {
+            final book = books[index];
+            final bookImage = book['bookImage'] ?? '';
+            return ListTile(
+              title: Text(book['bookName'] ?? ''),
+              subtitle: Text(book['authorName'] ?? ''),
+              leading: bookImage.isNotEmpty
+                  ? Image.network(
+                      bookImage,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.error);
+                      },
+                    )
+                  : const Icon(Icons.camera_alt),
+              onTap: () {
+                // Tıklanan kitabın detay sayfasına gitmek için Navigator kullanarak yönlendirme yapın
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookDetailPage(bookInfo: book),
+                  ),
+                );
+              },
+            );
+          },
+        );
+//ibrary content
+
+      case 2:
+        return ListView.builder(
+          itemCount: _readingList.length,
+          itemBuilder: (context, index) {
+            final book = _readingList[index];
+            final bookImage = book['bookImage'] ?? '';
+            return ListTile(
+              title: Text(book['bookName'] ?? ''),
+              subtitle: Text(book['authorName'] ?? ''),
+              leading: bookImage.isNotEmpty
+                  ? Image.network(bookImage,
+                      errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.error);
+                    })
+                  : const Icon(Icons.camera_alt),
+            );
+          },
+        ); // Reading list contentceholder for reading list
+
+      case 3:
+        return ListView.builder(
+          itemCount: _itemsToExchange.length,
+          itemBuilder: (context, index) {
+            final item = _itemsToExchange[index];
+            final itemImage = item['itemImage'] ?? '';
+            return ListTile(
+              title: Text(item['itemName'] ?? ''),
+              subtitle: Text(item['itemDescription'] ?? ''),
+              leading: itemImage.isNotEmpty
+                  ? Image.network(itemImage,
+                      errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.error);
+                    })
+                  : const Icon(Icons.error),
+            );
+          },
+        ); // Items to exchange contenteholder for items to exchange
+
+      case 4:
+        return Center(child: Text('Teklifler')); // Placeholder for offers
+
+      case 5:
+        return Center(
+            child: Text('Takas Edilenler')); // Placeholder for exchanged items
+      default:
+        return Center(child: Text('Gönderiler')); // Default case
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,10 +286,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         decoration: const BoxDecoration(
                           color: Color.fromARGB(255, 204, 239, 202),
                           borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(50),
-                              bottomRight: Radius.circular(50)),
+                              bottomLeft: Radius.circular(35),
+                              bottomRight: Radius.circular(35)),
                         ),
-                        height: 300,
+                        height: 250,
                         child: Column(
                           children: [
                             Column(
@@ -121,7 +304,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   backgroundColor: Colors.transparent,
                                 ),
                                 SizedBox(
-                                  height: 10,
+                                  height: 5,
                                 ),
                                 _isLoading
                                     ? const CircularProgressIndicator()
@@ -132,10 +315,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18),
                                       ),
+                                SizedBox(height: 1),
+                                _isLoading
+                                    ? const CircularProgressIndicator()
+                                    : Text(
+                                        _locationInfo ??
+                                            "Konum bilgisi yüklenemedi",
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey[600]),
+                                      ),
                               ],
                             ),
                             SizedBox(
-                              height: 30,
+                              height: 20,
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -170,9 +363,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const SizedBox(
-                        height: 200,
+                        height: 170,
                       ),
-                      //Liste isimlerinin butonları
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -180,8 +372,15 @@ class _ProfilePageState extends State<ProfilePage> {
                             ListsButton(
                               btnHeight: 40,
                               btnWidth: 120,
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = 0;
+                                });
+                              },
                               btnText: "Gönderiler",
+                              btnColor: _selectedIndex == 0
+                                  ? Color.fromARGB(255, 129, 174, 126)
+                                  : AppColors.listButtonColor,
                             ),
                             const SizedBox(
                               width: 5,
@@ -189,17 +388,15 @@ class _ProfilePageState extends State<ProfilePage> {
                             ListsButton(
                               btnHeight: 40,
                               btnWidth: 120,
-                              onTap: () {},
-                              btnText: "Teklifler",
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            ListsButton(
-                              btnHeight: 40,
-                              btnWidth: 120,
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = 1;
+                                });
+                              },
                               btnText: "Kütüphane",
+                              btnColor: _selectedIndex == 1
+                                  ? Color.fromARGB(255, 129, 174, 126)
+                                  : AppColors.listButtonColor,
                             ),
                             const SizedBox(
                               width: 5,
@@ -207,8 +404,15 @@ class _ProfilePageState extends State<ProfilePage> {
                             ListsButton(
                               btnHeight: 40,
                               btnWidth: 120,
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = 2;
+                                });
+                              },
                               btnText: "Okumak İstenenler",
+                              btnColor: _selectedIndex == 2
+                                  ? Color.fromARGB(255, 129, 174, 126)
+                                  : AppColors.listButtonColor,
                             ),
                             const SizedBox(
                               width: 5,
@@ -216,17 +420,47 @@ class _ProfilePageState extends State<ProfilePage> {
                             ListsButton(
                               btnHeight: 40,
                               btnWidth: 120,
-                              onTap: () {},
-                              btnText: "Takas Edilenler",
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            ListsButton(
-                              btnHeight: 40,
-                              btnWidth: 120,
-                              onTap: () {},
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = 3;
+                                });
+                              },
                               btnText: "Takas Edilecekler",
+                              btnColor: _selectedIndex == 3
+                                  ? Color.fromARGB(255, 129, 174, 126)
+                                  : AppColors.listButtonColor,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            ListsButton(
+                              btnHeight: 40,
+                              btnWidth: 120,
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = 4;
+                                });
+                              },
+                              btnText: "Teklifler",
+                              btnColor: _selectedIndex == 4
+                                  ? Color.fromARGB(255, 129, 174, 126)
+                                  : AppColors.listButtonColor,
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            ListsButton(
+                              btnHeight: 40,
+                              btnWidth: 120,
+                              onTap: () {
+                                setState(() {
+                                  _selectedIndex = 5;
+                                });
+                              },
+                              btnText: "Takas Edilenler",
+                              btnColor: _selectedIndex == 5
+                                  ? Color.fromARGB(255, 129, 174, 126)
+                                  : AppColors.listButtonColor,
                             ),
                           ],
                         ),
@@ -234,7 +468,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   Positioned(
-                    top: 240,
+                    top: 215,
                     left: 0,
                     right: 0,
                     child: Padding(
@@ -243,7 +477,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 175, 214, 239),
                             borderRadius: BorderRadius.circular(20)),
-                        height: 250,
+                        height: 200,
                         child: Padding(
                           padding: const EdgeInsets.all(12),
                           child: Column(
@@ -274,27 +508,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              // const Spacer(),
-                              /* Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  ElevatedButton.icon(
-                                      onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15))),
-                                      icon: const Icon(Icons.person_add_alt),
-                                      label: const Text("Takip Et"))
-                                ],
-                              ),*/
                             ],
                           ),
                         ),
                       ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 470,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          borderRadius: BorderRadius.circular(20)),
+                      height: 250,
+                      child: _buildContent(),
                     ),
                   ),
                 ],
@@ -306,10 +536,3 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
- // BoxFit parametresi ile resmi sığdırma işlemini gerçekleştiriyoruz
-  // BoxFit.cover, resmi tamamen kaplayacak şekilde sığdırır
-  // BoxFit.fill, resmi tamamen dolduracak şekilde sığdırır
-  // BoxFit.contain, resmi tamamen sığdırmaya çalışırken, orijinal oranlarını korur
-  // BoxFit.fitWidth, resmi yatay yönde tamamen sığdırmaya çalışırken, orijinal oranlarını korur
-  // BoxFit.fitHeight, resmi dikey yönde tamamen sığdırmaya çalışırken, orijinal oranlarını korur
-  // BoxFit.scaleDown, resmi tamamen sığdırmaya çalışırken, orijinal boyutlarından büyükse küçültür

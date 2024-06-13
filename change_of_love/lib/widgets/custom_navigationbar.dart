@@ -2,7 +2,8 @@ import 'package:change_of_love/add/add_page.dart';
 import 'package:change_of_love/screens/home_page/home_page.dart';
 import 'package:change_of_love/screens/message_page/message_page.dart';
 import 'package:change_of_love/screens/profile_page/profile_page.dart';
-import 'package:change_of_love/screens/search/search_page.dart';
+import 'package:change_of_love/screens/search/book_search_page.dart';
+import 'package:change_of_love/screens/search/user_search.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
   int index = 0;
   final screens = [
     const HomePage(),
-    const SearchPage(),
+    SearchUsersPage(),
     const AddPage(),
     const MessagePage(),
     ProfilePage()

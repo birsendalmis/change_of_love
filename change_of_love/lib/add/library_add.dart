@@ -1,4 +1,4 @@
-import 'package:change_of_love/screens/search/search_page.dart';
+import 'package:change_of_love/screens/search/book_search_page.dart';
 import 'package:flutter/material.dart';
 
 class LibraryAdd extends StatefulWidget {
@@ -15,6 +15,6 @@ class _LibraryAddState extends State<LibraryAdd> {
         appBar: AppBar(
           title: Text("Kütüphaneye Ekleme Yap"),
         ),
-        body: SearchPage());
+        body: BookSearchPage());
   }
 }

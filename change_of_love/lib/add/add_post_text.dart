@@ -1,4 +1,4 @@
-import 'dart:io';
+/*import 'dart:io';
 
 import 'package:change_of_love/data/firebase_services/firestor.dart';
 import 'package:change_of_love/data/firebase_services/storage_method.dart';
@@ -131,3 +131,4 @@ class _AddPostTextScreenState extends State<AddPostTextScreen> {
     );
   }
 }
+*/

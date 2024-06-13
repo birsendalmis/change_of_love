@@ -1,7 +1,6 @@
-import 'dart:convert';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyLibrary extends StatefulWidget {
   final Map<String, String> newBook;
@@ -21,38 +20,57 @@ class _MyLibraryState extends State<MyLibrary> {
   void initState() {
     super.initState();
     loadBooks();
-    // Eklenen yeni kitabı listeye ekleyin
-    if (widget.newBook.isNotEmpty) {
-      books.add(widget.newBook);
-    }
   }
 
   Future<void> loadBooks() async {
     print('loadBooks is called');
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final List<String>? savedBooks = prefs.getStringList('kutuphanem');
-      if (savedBooks != null) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final QuerySnapshot<Map<String, dynamic>> snapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .collection('kutuphane')
+                .get();
+
         setState(() {
-          books = savedBooks
-              .where((book) => book.isNotEmpty && _isValidJson(book))
-              .map((jsonString) =>
-                  Map<String, String>.from(json.decode(jsonString)))
-              .toList();
+          books = snapshot.docs.map((doc) {
+            final data = doc.data();
+            data['documentId'] =
+                doc.id; // Belge kimliğini kitap verilerine ekle
+            return Map<String, String>.from(data);
+          }).toList();
         });
+        // Eklenen yeni kitabı listeye ekleyin
+        if (widget.newBook.isNotEmpty) {
+          books.add(widget.newBook);
+        }
       }
     } catch (error) {
       print('loadBooks Error: $error');
     }
   }
 
-  bool _isValidJson(String jsonString) {
+  void _deleteBook(String documentId) async {
     try {
-      json.decode(jsonString);
-      return true;
-    } catch (e) {
-      print('Invalid JSON: $jsonString');
-      return false;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Firebase'den kitabı kaldır
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('kutuphane')
+            .doc(documentId) // Belge kimliği üzerinden kaldır
+            .delete();
+
+        // Yerel listeden kitabı kaldır
+        setState(() {
+          books.removeWhere((book) => book['documentId'] == documentId);
+        });
+      }
+    } catch (error) {
+      print('Delete book error: $error');
     }
   }
 
@@ -80,10 +98,22 @@ class _MyLibraryState extends State<MyLibrary> {
               itemCount: books.length,
               itemBuilder: (context, index) {
                 final book = books[index];
+                final bookImage = book['bookImage'] ?? '';
                 return ListTile(
                   title: Text(book['bookName'] ?? ''),
                   subtitle: Text(book['authorName'] ?? ''),
-                  leading: Image.network(book['bookImage'] ?? ''),
+                  leading: bookImage.isNotEmpty
+                      ? Image.network(bookImage,
+                          errorBuilder: (context, error, stackTrace) {
+                          return Icon(Icons.error);
+                        })
+                      : const Icon(Icons.camera_alt),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      _deleteBook(book['documentId']!);
+                    },
+                  ),
                 );
               },
             ),

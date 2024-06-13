@@ -54,13 +54,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   userName1: "Merve Nur Demir",
                   userName2: "Fatma ÇAKIR"),
               GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const followerProfile()),
-                  );
-                },
+                onTap: () {},
                 child: CustomFollowNotification(
                     userName: "Alper Doruk",
                     assetName: "assets/images/alper.jpg"),

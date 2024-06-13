@@ -8,6 +8,7 @@ class ListsButton extends StatelessWidget {
   final double? fontSize;
   final double? btnWidth;
   final double? btnHeight;
+  final Color? btnColor;
 
   const ListsButton({
     super.key,
@@ -17,6 +18,7 @@ class ListsButton extends StatelessWidget {
     this.fontSize,
     this.btnWidth,
     this.btnHeight,
+    this.btnColor = AppColors.listButtonColor,
   });
 
   @override
@@ -27,7 +29,8 @@ class ListsButton extends StatelessWidget {
             btnWidth ?? MediaQuery.of(context).size.width,
             btnHeight ?? MediaQuery.of(context).size.height * 0.06,
           ),
-          backgroundColor: AppColors.listButtonColor,
+          // backgroundColor: AppColors.listButtonColor,
+          backgroundColor: btnColor,
           elevation: 1.0,
           side: const BorderSide(color: Color.fromARGB(255, 214, 199, 179)),
           shape: RoundedRectangleBorder(
@@ -38,7 +41,9 @@ class ListsButton extends StatelessWidget {
         btnText,
         style: TextStyle(
           fontSize: fontSize,
-          color: btnTextColor,
+          color: btnColor == AppColors.listButtonColor
+              ? btnTextColor
+              : Colors.white,
         ),
       ),
     );
