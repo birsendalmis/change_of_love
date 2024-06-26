@@ -79,4 +79,14 @@ class Authentication {
       );
     }
   }
+
+  Future<void> logout() async {
+    try {
+      await auth.signOut();
+    } catch (e) {
+      throw exceptions("Çıkış yapma işlemi başarısız oldu: ${e.toString()}");
+    }
+  }
+
+
 }

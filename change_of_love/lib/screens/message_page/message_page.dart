@@ -3,7 +3,6 @@ import 'package:change_of_love/screens/home_page/home_page.dart';
 import 'package:change_of_love/screens/message_page/message_detail.dart';
 import 'package:change_of_love/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class MessagePage extends StatefulWidget {
   const MessagePage({super.key});
@@ -52,7 +51,7 @@ class _MessagePageState extends State<MessagePage> {
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             GestureDetector(
@@ -62,26 +61,26 @@ class _MessagePageState extends State<MessagePage> {
                   MaterialPageRoute(builder: (context) => MessageDetails()),
                 );
               },
-              child: MessageCard(
+              child: const MessageCard(
                 assetName: "assets/images/alper.jpg",
                 userName: "Alper Doruk",
                 messageText: "Karar verince bilgilendireceğim :).",
                 messageTime: "23:00",
               ),
             ),
-            MessageCard(
+            const MessageCard(
               assetName: "assets/images/atilla.jpg",
               userName: "Atilla AK",
               messageText: "Yanıtınızı bekliyorum :)",
               messageTime: "20:08",
             ),
-            MessageCard(
+            const MessageCard(
               assetName: "assets/images/mero.jpg",
               userName: "Merve DEMİR",
               messageText: "Küçük prens için takas düşünür müsün?",
               messageTime: "09:46",
             ),
-            MessageCard(
+            const MessageCard(
               assetName: "assets/images/fato.jpg",
               userName: "Fatma ÇAKIR",
               messageText: "Teşekkürler.",
@@ -95,10 +94,10 @@ class _MessagePageState extends State<MessagePage> {
 }
 
 class MessageCard extends StatelessWidget {
-  final String assetName;
-  final String userName;
-  final String messageText;
-  final String messageTime;
+  final String assetName;    //mesajlaşılan kişinin profil fotoğrafı
+  final String userName;     //mesajlaşılan kişinin kullanıcı adı
+  final String messageText;  //Mesaşlaşılan kişi ile olan son mesaj
+  final String messageTime;  //son atılan mesajın saati
   const MessageCard({
     super.key,
     required this.assetName,
@@ -111,7 +110,7 @@ class MessageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Padding(
@@ -123,7 +122,7 @@ class MessageCard extends StatelessWidget {
                 radius: 30,
                 backgroundImage: AssetImage(assetName),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Padding(
@@ -134,33 +133,33 @@ class MessageCard extends StatelessWidget {
                   children: [
                     Text(
                       userName,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
                       messageText,
-                      style: TextStyle(fontWeight: FontWeight.w300),
+                      style: const TextStyle(fontWeight: FontWeight.w300),
                     ),
                   ],
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Padding(
                 padding: const EdgeInsets.only(top: 5),
                 child: Text(
                   messageTime,
-                  style: TextStyle(fontWeight: FontWeight.w300),
+                  style: const TextStyle(fontWeight: FontWeight.w300),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               )
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
-        Divider(
+        const Divider(
           thickness: 0.5,
         )
       ],

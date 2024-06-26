@@ -2,6 +2,7 @@ import 'package:change_of_love/add/change_list_add.dart';
 import 'package:change_of_love/add/library_add.dart';
 import 'package:change_of_love/add/read_list_add.dart';
 import 'package:change_of_love/constants/colors.dart';
+import 'package:change_of_love/screens/message_page/chat_screen.dart';
 import 'package:change_of_love/screens/message_page/message_page.dart';
 import 'package:change_of_love/screens/home_page/home_body_page.dart';
 import 'package:change_of_love/screens/post/gallery_picker_page.dart';
@@ -22,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     const HomeBodyPage(),
     SearchPage(),
     const SizedBox(),
-    const MessagePage(),
+    MessagePage(),
     ProfilePage()
   ];
   @override

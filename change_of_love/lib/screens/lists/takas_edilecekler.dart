@@ -75,9 +75,21 @@ class _TakasEdileceklerState extends State<TakasEdilecekler> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text(
-            "TAKAS EDECEKLERİM",
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 24),
+          child: Row(
+            children: [
+              // Geri tuşuna basıldığında
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context); // Profil sayfasından çık
+                },
+              ),
+
+              Text(
+                "TAKAS EDECEKLERİM",
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 24),
+              ),
+            ],
           ),
         ),
         automaticallyImplyLeading: false,

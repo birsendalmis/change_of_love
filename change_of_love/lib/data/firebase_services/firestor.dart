@@ -62,6 +62,8 @@ class FirebaseFirestor {
     required String postImage,
     required String caption,
     required String location,
+       required String? city,
+    required String? district,
     required int likeCount, // Beğeni sayısı özelliği eklendi
     required int commentCount,
     required DateTime time, // Paylaşılma zamanı özelliği eklendi
@@ -75,6 +77,8 @@ class FirebaseFirestor {
       'caption': caption,
       'location': location,
       'uid': auth.currentUser!.uid,
+      'city':user.city,
+      'district':user.district,
       'postId': uid,
       'likeCount': likeCount, // Yeni özellik: Beğeni sayısı
       'commentCount': commentCount,
@@ -98,6 +102,9 @@ class FirebaseFirestor {
           'city': data.containsKey('city')
               ? data['city']
               : null, // Şehir bilgisini güvenli bir şekilde okuyoruz
+         'district': data.containsKey('district')
+              ? data['district']
+              : null,
         };
       }).toList();
     });
@@ -155,6 +162,44 @@ class FirebaseFirestor {
     return true;
   }*/
 
+ Future<void> followUser(String targetUserId) async {
+  final String currentUserId = auth.currentUser!.uid;
+
+  // Takip edilen kullanıcının takipçi listesine eklenecek
+  await firebaseFirestore.collection('users').doc(targetUserId).update({
+    'followers': FieldValue.arrayUnion([currentUserId])
+  });
+
+  // Mevcut kullanıcının takip ettiği kullanıcılar listesine eklenecek
+  await firebaseFirestore.collection('users').doc(currentUserId).update({
+    'following': FieldValue.arrayUnion([targetUserId])
+  });
+}
+
+ Future<void> unfollowUser(String targetUserId) async {
+  final String currentUserId = auth.currentUser!.uid;
+
+  // Takip edilen kullanıcının takipçi listesinden çıkarılacak
+  await firebaseFirestore.collection('users').doc(targetUserId).update({
+    'followers': FieldValue.arrayRemove([currentUserId])
+  });
+
+  // Mevcut kullanıcının takip ettiği kullanıcılar listesinden çıkarılacak
+  await firebaseFirestore.collection('users').doc(currentUserId).update({
+    'following': FieldValue.arrayRemove([targetUserId])
+  });
+}
+
+Future<bool> isFollowing(String targetUserId) async {
+  final String currentUserId = auth.currentUser!.uid;
+  final userDoc = await firebaseFirestore.collection('users').doc(currentUserId).get();
+
+  List following = userDoc.data()!['following'];
+  return following.contains(targetUserId);
+}
+
+
+ 
   // Yorum ekleme
 
   Future<bool> comments({

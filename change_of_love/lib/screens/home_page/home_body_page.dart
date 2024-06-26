@@ -86,6 +86,8 @@ class _HomeBodyPageState extends State<HomeBodyPage> {
                   postAssetName: post['postImage'],
                   postText: post['caption'],
                   userAssetName: post['profileImage'],
+                  city: post['city'],
+                  district: post['district'],
                 );
               },
             );

@@ -2,6 +2,8 @@ import 'package:change_of_love/constants/colors.dart';
 import 'package:change_of_love/data/firebase_services/firebase_storage_service.dart';
 import 'package:change_of_love/data/firebase_services/firestor.dart';
 import 'package:change_of_love/data/model/user_model.dart';
+import 'package:change_of_love/screens/profile_page/followers_page.dart';
+import 'package:change_of_love/screens/profile_page/following_page.dart';
 import 'package:change_of_love/screens/profile_page/settings.dart';
 import 'package:change_of_love/screens/search/selected_book_detail.dart';
 import 'package:change_of_love/widgets/custom_icon_button.dart';
@@ -170,6 +172,8 @@ class _ProfilePageState extends State<ProfilePage> {
               postAssetName: post['postImage'],
               postText: post['caption'],
               userAssetName: _userProfileImageUrl ?? '',
+              city: post['city'],
+              district: post['district'],
             );
           },
         );
@@ -192,12 +196,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   : const Icon(Icons.camera_alt),
               onTap: () {
                 // Tıklanan kitabın detay sayfasına gitmek için Navigator kullanarak yönlendirme yapın
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BookDetailPage(bookInfo: book),
-                  ),
-                );
               },
             );
           },
@@ -227,17 +225,19 @@ class _ProfilePageState extends State<ProfilePage> {
         return ListView.builder(
           itemCount: _itemsToExchange.length,
           itemBuilder: (context, index) {
-            final item = _itemsToExchange[index];
-            final itemImage = item['itemImage'] ?? '';
+            final book = _itemsToExchange[index];
+            final bookImage = book['bookImage'] ?? '';
             return ListTile(
-              title: Text(item['itemName'] ?? ''),
-              subtitle: Text(item['itemDescription'] ?? ''),
-              leading: itemImage.isNotEmpty
-                  ? Image.network(itemImage,
+              title: Text(book['bookName'] ?? ''),
+              subtitle: Text(book['authorName'] ?? ''),
+              leading: bookImage.isNotEmpty
+                  ? Image.network(
+                      bookImage,
                       errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.error);
-                    })
-                  : const Icon(Icons.error),
+                        return Icon(Icons.error);
+                      },
+                    )
+                  : const Icon(Icons.camera_alt),
             );
           },
         ); // Items to exchange contenteholder for items to exchange
@@ -333,29 +333,53 @@ class _ProfilePageState extends State<ProfilePage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                      _followerCount?.toString() ?? "0",
-                                    ),
-                                    Text(
-                                      "Takipçi",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
+                                GestureDetector(
+                                  onTap: () {
+                                    // Takipçilerin listesini görüntüleme işlemi
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FollowersPage(
+                                            userId: _auth.currentUser!.uid),
+                                      ),
+                                    );
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        _followerCount?.toString() ?? "0",
+                                      ),
+                                      Text(
+                                        "Takipçi",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      _followingCount?.toString() ?? "0",
-                                    ),
-                                    Text(
-                                      "Takip Edilen",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
+                                GestureDetector(
+                                  onTap: () {
+                                    // Takip edilenlerin listesini görüntüleme işlemi
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FollowingPage(
+                                            userId: _auth.currentUser!.uid),
+                                      ),
+                                    );
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        _followingCount?.toString() ?? "0",
+                                      ),
+                                      Text(
+                                        "Takip Edilen",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),

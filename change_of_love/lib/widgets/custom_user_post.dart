@@ -1,8 +1,6 @@
 import 'package:change_of_love/data/firebase_services/firestor.dart';
-import 'package:change_of_love/data/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CustomUserPost extends StatefulWidget {
   final String postId;
@@ -10,6 +8,8 @@ class CustomUserPost extends StatefulWidget {
   final String userAssetName;
   final String postAssetName;
   final String postText;
+  final String? city;
+  final String? district;
 
   CustomUserPost(
       {super.key,
@@ -17,7 +17,9 @@ class CustomUserPost extends StatefulWidget {
       required this.userName,
       required this.userAssetName,
       required this.postAssetName,
-      required this.postText});
+      required this.postText,
+      this.city,
+      this.district});
 
   @override
   State<CustomUserPost> createState() => _CustomUserPostState();
@@ -28,17 +30,18 @@ class _CustomUserPostState extends State<CustomUserPost> {
   int _commentCount = 0;
   bool _isLiked = false;
   bool _isLoading = false;
-  String? _userLocation; // Kullanıcının il-ilçe bilgisi
+  TextEditingController _commentController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     _fetchLikeCount(); // initState içinde beğeni sayısını alacak metodun çağrılması
     _fetchCommentCount(); // Yorum sayısını alacak metodun çağrılması
     _fetchLikeStatus(); // Beğeni durumunu alacak metodun çağrılması
-    _loadUserLocation(); // Kullanıcı konum bilgisini yükle
+    // _loadUserLocation(); // Kullanıcı konum bilgisini yükle
   }
 
-  Future<void> _loadUserLocation() async {
+  /*Future<void> _loadUserLocation() async {
     try {
       // Firestore'dan kullanıcı bilgilerini al
       Usermodel user = await FirebaseFirestor().getUser();
@@ -48,7 +51,7 @@ class _CustomUserPostState extends State<CustomUserPost> {
     } catch (e) {
       print('Error loading user location: $e');
     }
-  }
+  }*/
 
   // Firestore'dan beğeni sayısını alacak metod
   Future<void> _fetchLikeCount() async {
@@ -59,6 +62,19 @@ class _CustomUserPostState extends State<CustomUserPost> {
       });
     } catch (e) {
       print('Error fetching like count: $e');
+    }
+  }
+
+  // Firestore'dan yorum sayısını alacak metod
+  Future<void> _fetchCommentCount() async {
+    try {
+      final commentCount =
+          await FirebaseFirestor().getCommentCount(widget.postId);
+      setState(() {
+        _commentCount = commentCount;
+      });
+    } catch (e) {
+      print('Error fetching comment count: $e');
     }
   }
 
@@ -154,17 +170,42 @@ class _CustomUserPostState extends State<CustomUserPost> {
     }
   }*/
 
-  // Firestore'dan yorum sayısını alacak metod
-  Future<void> _fetchCommentCount() async {
+
+//_addComment metodu kullanılarak yorumlar Firestore'a kaydedilir
+  void _addComment() async {
+    if (_commentController.text.isEmpty) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      final commentCount =
-          await FirebaseFirestor().getCommentCount(widget.postId);
-      setState(() {
-        _commentCount = commentCount;
-      });
+      await FirebaseFirestor().comments(
+        comment: _commentController.text,
+        type: 'posts',
+        uidd: widget.postId,
+      );
+      _commentController.clear();
+      _fetchCommentCount();
     } catch (e) {
-      print('Error fetching comment count: $e');
+      print('Error adding comment: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
+  }
+
+  Stream<List<Map<String, dynamic>>> _getCommentsStream() {
+    return FirebaseFirestor()
+        .firebaseFirestore
+        .collection('posts')
+        .doc(widget.postId)
+        .collection('comments')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
   }
 
   @override
@@ -201,15 +242,14 @@ class _CustomUserPostState extends State<CustomUserPost> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (_userLocation !=
-                            null) // Eğer konum bilgisi varsa göster
-                          Text(
-                            _userLocation!,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: const Color.fromARGB(255, 127, 127, 127),
-                            ),
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(widget.city ?? 'İl'),
+                            Text(" - "),
+                            Text(widget.district ?? 'İlçe')
+                          ],
+                        )
                       ],
                     ),
                   ],
@@ -292,20 +332,74 @@ class _CustomUserPostState extends State<CustomUserPost> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              RichText(
-                text:
-                    TextSpan(style: TextStyle(color: Colors.black), children: [
-                  TextSpan(
-                    text: "${widget.userName}: ",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  TextSpan(
-                    text: widget.postText,
-                  )
-                ]),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: "${widget.userName}: ",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                          text: widget.postText,
+                        )
+                      ]),
+                ),
               ),
             ],
           ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _commentController,
+                  decoration: InputDecoration(
+                    hintText: 'Yorum yaz...',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.send),
+                onPressed: _addComment,
+              ),
+            ],
+          ),
+        ),
+        StreamBuilder<List<Map<String, dynamic>>>(
+          stream: _getCommentsStream(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            if (snapshot.hasError) {
+              return Text('Yorumlar yüklenemedi');
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Text('Henüz yorum yok');
+            }
+            final comments = snapshot.data!;
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: comments.length,
+              itemBuilder: (context, index) {
+                final comment = comments[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(comment['profileImage'] ?? ''),
+                  ),
+                  title: Text(comment['username']),
+                  subtitle: Text(comment['comment']),
+                );
+              },
+            );
+          },
         ),
         SizedBox(
           height: 20,

@@ -1,4 +1,4 @@
-import 'package:change_of_love/screens/profile_page/follower_profile_page.dart';
+import 'package:change_of_love/screens/profile_page/selected_profile_page.dart';
 import 'package:change_of_love/widgets/custom_follow_notification.dart';
 import 'package:change_of_love/widgets/custom_liked_notification.dart';
 import 'package:flutter/material.dart';

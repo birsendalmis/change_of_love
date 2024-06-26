@@ -1,3 +1,4 @@
+import 'package:change_of_love/screens/auth/login_page.dart';
 import 'package:change_of_love/screens/drawer_page/cof_about.dart';
 import 'package:change_of_love/screens/drawer_page/developer_about.dart';
 import 'package:change_of_love/screens/lists/library.dart';
@@ -5,6 +6,7 @@ import 'package:change_of_love/screens/lists/okumak_istedikleri.dart';
 import 'package:change_of_love/screens/lists/takas_edilecekler.dart';
 import 'package:change_of_love/screens/lists/takas_edilenler.dart';
 import 'package:change_of_love/screens/lists/teklifler.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DrawerCard extends StatefulWidget {
@@ -15,6 +17,33 @@ class DrawerCard extends StatefulWidget {
 }
 
 class _DrawerCardState extends State<DrawerCard> {
+  late String _userId; // Kullanıcı kimliği için bir değişken tanımlıyoruz
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUser(); // initState içinde kullanıcı kimliğini alacak işlevi çağırıyoruz
+  }
+
+  void _getCurrentUser() async {
+    User? user = FirebaseAuth.instance
+        .currentUser; // Firebase Authentication'dan geçerli kullanıcıyı al
+    if (user != null) {
+      setState(() {
+        _userId = user.uid; // Kullanıcı kimliğini _userId değişkenine atıyoruz
+      });
+    }
+  }
+
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance
+        .signOut(); // Firebase Authentication oturumunu kapat
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => LoginPage()), // Login sayfasına yönlendir
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -110,12 +139,13 @@ class _DrawerCardState extends State<DrawerCard> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Teklifler()),
+                  MaterialPageRoute(
+                      builder: (context) => OffersPage(userId: _userId)),
                 );
               },
             ),
             DrawerListTile(
-              titleTxt: "Kütüphanem",
+              titleTxt: "Kütüphane",
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -129,19 +159,21 @@ class _DrawerCardState extends State<DrawerCard> {
               },
             ),
             DrawerListTile(
-              titleTxt: "Takas Ettiklerim",
+              titleTxt: "Okumak İstenenler",
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const TakasEdilenler(),
+                    builder: (context) => OkumakIstedikleri(
+                      newBook: {},
+                    ),
                   ),
                 );
               },
             ),
             DrawerListTile(
-              titleTxt: "Takas Edeceklerim",
+              titleTxt: "Takas Edilecekler",
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.push(
@@ -155,15 +187,13 @@ class _DrawerCardState extends State<DrawerCard> {
               },
             ),
             DrawerListTile(
-              titleTxt: "Okumak İstediklerim",
+              titleTxt: "Takas Edilenler",
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OkumakIstedikleri(
-                      newBook: {},
-                    ),
+                    builder: (context) => const TakasEdilenler(),
                   ),
                 );
               },
@@ -179,6 +209,10 @@ class _DrawerCardState extends State<DrawerCard> {
                   ),
                 );
               },
+            ),
+            IconButton(
+              onPressed: _signOut, // Oturum kapatma işlevini çağır
+              icon: Icon(Icons.logout_outlined),
             )
           ],
         ),

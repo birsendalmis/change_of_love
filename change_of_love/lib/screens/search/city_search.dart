@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:change_of_love/data/firebase_services/firestor.dart';
-import 'package:change_of_love/screens/profile_page/follower_profile_page.dart';
+import 'package:change_of_love/screens/profile_page/selected_profile_page.dart';
 import 'package:change_of_love/screens/search/post_detail.dart';
 
 class SearchPage extends StatefulWidget {
@@ -36,8 +36,9 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           Expanded(
+            flex: 1,
             child: _searchQuery.isEmpty
-                ? Text("Veri yok")
+                ? Text(" ")
                 : StreamBuilder<List<Map<String, dynamic>>>(
                     stream: Stream.fromFuture(
                         FirebaseFirestor().searchUsers(_searchQuery)),
@@ -63,7 +64,7 @@ class _SearchPageState extends State<SearchPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => FollowerProfilePage(
+                                  builder: (context) => SelectedProfilePage(
                                     userId: userData['id'],
                                   ),
                                 ),
@@ -76,6 +77,7 @@ class _SearchPageState extends State<SearchPage> {
                   ),
           ),
           Expanded(
+            flex: 3,
             child: StreamBuilder<List<Map<String, dynamic>>>(
               stream: FirebaseFirestor().getAllPostsStream(),
               builder: (context, snapshot) {
@@ -122,6 +124,8 @@ class _SearchPageState extends State<SearchPage> {
                               userAssetName: postData['profileImage'],
                               postAssetName: postData['postImage'],
                               postText: postData['caption'],
+                              city: postData['city'],
+                              district: postData['district'],
                             ),
                           ),
                         );
@@ -132,6 +136,8 @@ class _SearchPageState extends State<SearchPage> {
                         userAssetName: postData['profileImage'],
                         postAssetName: postData['postImage'],
                         postText: postData['caption'],
+                        city: postData['city'],
+                        district: postData['district'],
                       ),
                     );
                   },
@@ -151,6 +157,8 @@ class CustomUserPost extends StatelessWidget {
   final String userAssetName;
   final String postAssetName;
   final String postText;
+  final String? city;
+  final String? district;
 
   CustomUserPost({
     required this.postId,
@@ -158,6 +166,8 @@ class CustomUserPost extends StatelessWidget {
     required this.userAssetName,
     required this.postAssetName,
     required this.postText,
+    this.city,
+    this.district,
   });
 
   @override

@@ -36,11 +36,15 @@ class _NextPageState extends State<NextPage> {
       final String caption = _captionController.text;
       final String postImage = await _uploadImage(File(widget.imagePath));
       final String location = "";
+      final String city = "";
+      final String district = "";
       final int likeCount = 0;
       final int commentCount = 0;
       final DateTime time = DateTime.now();
 
       bool result = await _firebaseFirestore.createPost(
+        city: city,
+        district: district,
         postImage: postImage,
         caption: caption,
         location: location,

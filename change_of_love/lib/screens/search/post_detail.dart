@@ -15,7 +15,7 @@ class PhotoDetailPage extends StatefulWidget {
     required this.userName,
     required this.userAssetName,
     required this.postAssetName,
-    required this.postText,
+    required this.postText, required city, required district,
   });
 
   @override

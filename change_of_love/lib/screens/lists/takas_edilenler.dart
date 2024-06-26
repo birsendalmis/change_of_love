@@ -13,11 +13,23 @@ class _TakasEdilenlerState extends State<TakasEdilenler> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            "TAKAS ETTİKLERİM",
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 24),
-          ),
+        title: Row(
+          children: [
+            // Geri tuşuna basıldığında
+            IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // Profil sayfasından çık
+              },
+            ),
+
+            Center(
+              child: Text(
+                "TAKAS ETTİKLERİM",
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 24),
+              ),
+            ),
+          ],
         ),
         automaticallyImplyLeading: false,
         elevation: 0,
